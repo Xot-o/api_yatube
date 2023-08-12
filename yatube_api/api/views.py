@@ -9,6 +9,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 
+
 class IsOwnerOrReadOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
@@ -20,32 +21,37 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
-    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-@api_view(['GET'])
-def api_group(request):
-    group = Group.get.objects.all()
 
-    if request.method == 'GET':
-        serializer = PostSerializer(group, many=True)
-        return Response(serializer.data)
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
 
-@api_view(['GET'])
-def api_group_detail(request, pk):
-    group = get_object_or_404(Group, id=pk)
+    permission_classes = [IsAuthenticated]
 
-    if request.method == 'GET':
-        serializer = PostSerializer(group)
-        return Response(serializer.data)
+    def api_group(request):
+        group = Group.get.objects.all()
+
+        if request.method == 'GET':
+            serializer = PostSerializer(group, many=True)
+            return Response(serializer.data)
+
+    def api_group_detail(request, pk):
+        group = get_object_or_404(Group, id=pk)
+
+        if request.method == 'GET':
+            serializer = PostSerializer(group)
+            return Response(serializer.data)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
-    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_queryset(self):
         post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))

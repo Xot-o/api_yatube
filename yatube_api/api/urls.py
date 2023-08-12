@@ -1,32 +1,20 @@
-from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib import admin
 from django.urls import include, path
-
-from .views import PostViewSet, CommentViewSet, api_group, api_group_detail
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
-app_name = 'api'
+from .views import CommentViewSet, GroupViewSet, PostViewSet
 
 router = DefaultRouter()
-router.register('posts/', PostViewSet, basename='posts')
-router.register('posts/<int:post_id>/comments/', CommentViewSet, basename='comments')
+
+router.register('posts', PostViewSet, basename='posts')
+router.register('groups', GroupViewSet, basename='groups')
+router.register(
+    r'posts/(?P<post_id>\d+)/comments',
+    CommentViewSet,
+    basename='comments'
+)
 
 urlpatterns = [
-
-    path('api-token-auth/', views.obtain_auth_token),
-    path('groups/', api_group),
-    path('groups/<int:pk>', api_group_detail),
-
+    path('v1/', include(router.urls)),
+    path('v1/api-token-auth/', views.obtain_auth_token),
 ]
-
-urlpatterns += router.urls
-
-if settings.DEBUG:
-    urlpatterns += static(
-        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
-    )
-    urlpatterns += static(
-        settings.STATIC_URL, document_root=settings.STATIC_ROOT
-    )
