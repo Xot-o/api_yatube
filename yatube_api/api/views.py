@@ -1,13 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from posts.models import Post, Group, Comment
-from .serializers import PostSerializer, CommentSerializer, GroupSerializer
-from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
+
+from posts.models import Post, Group
+from .serializers import PostSerializer, CommentSerializer, GroupSerializer
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -18,40 +17,31 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
 
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
 
     permission_classes = [IsAuthenticated]
 
-    def api_group(request):
-        group = Group.get.objects.all()
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
 
-        if request.method == 'GET':
-            serializer = PostSerializer(group, many=True)
-            return Response(serializer.data)
-
-    def api_group_detail(request, pk):
-        group = get_object_or_404(Group, id=pk)
-
-        if request.method == 'GET':
-            serializer = PostSerializer(group)
-            return Response(serializer.data)
+    def create(self, request):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    serializer_class = CommentSerializer
-
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    serializer_class = CommentSerializer
 
     def get_queryset(self):
         post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
