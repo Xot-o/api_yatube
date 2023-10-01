@@ -11,7 +11,8 @@ from .serializers import PostSerializer, CommentSerializer, GroupSerializer
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
-    Класс доступа, проверяет что автор запроса = автор поста, иначе дает доступ только для чтения.
+    Класс доступа, проверяет что автор запроса = автор поста,
+    иначе дает доступ только для чтения.
     """
 
     def has_object_permission(self, request, view, obj):
@@ -21,7 +22,8 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
 class PostViewSet(viewsets.ModelViewSet):
     """
-    Вью сет постов. Просмотр доступен после аутентификации, изменения поста только автору.
+    Вью сет постов. Просмотр доступен после аутентификации,
+    изменения поста только автору.
     """
 
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
@@ -49,7 +51,8 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
-    Вью сет комментариев. Просмотр доступен после аутентификации, изменения комментария только автору.
+    Вью сет комментариев. Просмотр доступен после аутентификации,
+    изменения комментария только автору.
     """
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
