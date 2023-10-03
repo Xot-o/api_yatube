@@ -5,26 +5,24 @@ from posts.models import Post, Comment, Group
 class PostSerializer(serializers.ModelSerializer):
     """Сериализатор модели Post. Содержит особую обработку для поля author.
     """
-    author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True
-    )
+    author = serializers.SlugRelatedField(slug_field='username')
 
     class Meta:
         model = Post
         fields = ('id', 'text', 'author', 'image', 'group', 'pub_date')
+        read_only_fields = ('author',)
 
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Comment. Содержит особую обработку для поля author.
     """
-    author = serializers.SlugRelatedField(
-        'username', read_only=True
-    )
-    post = serializers.PrimaryKeyRelatedField(read_only=True)
+    author = serializers.SlugRelatedField('username',)
+    post = serializers.PrimaryKeyRelatedField
 
     class Meta:
         model = Comment
         fields = ('id', 'author', 'post', 'text', 'created')
+        read_only_fields = ('author', 'post',)
 
 
 class GroupSerializer(serializers.ModelSerializer):
