@@ -5,7 +5,9 @@ from posts.models import Post, Comment, Group
 class PostSerializer(serializers.ModelSerializer):
     """Сериализатор модели Post. Содержит особую обработку для поля author.
     """
-    author = serializers.SlugRelatedField(slug_field='username')
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True
+    )
 
     class Meta:
         model = Post
@@ -16,13 +18,15 @@ class PostSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Comment. Содержит особую обработку для поля author.
     """
-    author = serializers.SlugRelatedField('username',)
-    post = serializers.PrimaryKeyRelatedField
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True
+    )
+    post = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Comment
         fields = ('id', 'author', 'post', 'text', 'created')
-        read_only_fields = ('author', 'post',)
+        read_only_fields = ('author', 'post')
 
 
 class GroupSerializer(serializers.ModelSerializer):
