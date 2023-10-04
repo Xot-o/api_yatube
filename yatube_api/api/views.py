@@ -39,15 +39,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = CommentSerializer
 
-    @staticmethod
     def get_post(self):
         return get_object_or_404(Post, pk=self.kwargs.get('post_id'))
 
     def get_queryset(self):
-        return CommentViewSet.get_post(self).comments.all()
+        return self.get_post().comments.all()
 
     def perform_create(self, serializer):
         serializer.save(
             author=self.request.user,
-            post=CommentViewSet.get_post(self)
+            post=self.get_post()
         )
